@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Parent Maxing — Pitch Simulator</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--indigo:#4f46e5;--il:#eef2ff;--id:#1e1b4b;--bg:#f8f9fb;--sf:#fff;--tx:#111827;--tx2:#6b7280;--bd:#e5e7eb;--gn:#047857;--gl:#ecfdf5;--am:#b45309;--al:#fffbeb;--rd:#dc2626;--rl:#fef2f2;--ub:#4f46e5;--pb:#f3f4f6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0);padding-bottom:env(safe-area-inset-bottom,0)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c0c12;--sf:#16161f;--tx:#e5e7eb;--tx2:#9ca3af;--bd:#2a2a38;--il:#1a1840;--pb:#1c1c2a;--gl:#062a1a;--al:#2a1f06;--rl:#2a0606}}
+:root[data-theme="dark"]{--bg:#0c0c12;--sf:#16161f;--tx:#e5e7eb;--tx2:#9ca3af;--bd:#2a2a38;--il:#1a1840;--pb:#1c1c2a;--gl:#062a1a;--al:#2a1f06;--rl:#2a0606}
+html{scroll-padding-top:env(safe-area-inset-top,0)}html,body{height:100%;margin:0}*{box-sizing:inherit}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--tx);display:flex;flex-direction:column;overflow:hidden}
+.tbar{display:flex;border-bottom:2px solid var(--bd);background:var(--sf);flex-shrink:0}
+.tbtn{flex:1;padding:12px 0;border:none;background:none;font-family:inherit;font-size:13px;font-weight:600;color:var(--tx2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px}
+.tbtn.on{color:var(--indigo);border-bottom-color:var(--indigo)}
+.tpane{flex:1;display:none;flex-direction:column;overflow:hidden}.tpane.on{display:flex}
+.pbar{display:flex;gap:5px;padding:8px 10px;overflow-x:auto;border-bottom:1px solid var(--bd);background:var(--sf);flex-shrink:0}
+.pbtn{flex-shrink:0;border:1.5px solid var(--bd);background:var(--sf);border-radius:16px;padding:5px 10px;font-size:11px;font-weight:600;color:var(--tx);cursor:pointer;font-family:inherit;white-space:nowrap}
+.pbtn:hover{border-color:var(--indigo)}.pbtn.on{background:var(--indigo);color:#fff;border-color:var(--indigo)}
+.dd{display:inline-block;width:7px;height:7px;border-radius:50%;margin-left:3px;vertical-align:middle}
+.de{background:var(--gn)}.dm{background:var(--am)}.dh{background:var(--rd)}
+.pstrip{padding:8px 12px;font-size:11px;color:var(--tx2);background:var(--il);border-bottom:1px solid var(--bd);flex-shrink:0;line-height:1.45}
+.pstrip b{color:var(--indigo)}
+.cha{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
+.m{max-width:84%;padding:9px 13px;border-radius:14px;font-size:13.5px;line-height:1.5;word-wrap:break-word}
+.m.u{align-self:flex-end;background:var(--ub);color:#fff;border-bottom-right-radius:4px}
+.m.p{align-self:flex-start;background:var(--pb);color:var(--tx);border-bottom-left-radius:4px}
+.m .r{font-size:10px;font-weight:700;margin-bottom:2px;opacity:.6;text-transform:uppercase;letter-spacing:.3px}
+.m.p .r{color:var(--indigo)}.m.u .r{color:rgba(255,255,255,.6)}
+.m.s{align-self:center;max-width:92%;background:var(--il);color:var(--indigo);font-size:11.5px;font-weight:600;text-align:center;border-radius:10px;padding:7px 14px}
+.sc{align-self:center;max-width:92%;border-radius:12px;padding:12px 16px;font-size:12px;line-height:1.5;text-align:left}
+.sc.g{background:var(--gl);color:var(--gn);border:1px solid var(--gn)}
+.sc.y{background:var(--al);color:var(--am);border:1px solid var(--am)}
+.sc.b{background:var(--rl);color:var(--rd);border:1px solid var(--rd)}
+.sn{font-size:28px;font-weight:800}
+.ctl{border-top:1px solid var(--bd);background:var(--sf);flex-shrink:0;padding:10px 12px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0));display:flex;flex-direction:column;gap:8px}
+.irow{display:flex;gap:6px}
+.irow textarea{flex:1;border:1.5px solid var(--bd);border-radius:10px;padding:10px 12px;font-size:14px;font-family:inherit;color:var(--tx);background:var(--bg);resize:none;min-height:44px;max-height:110px;line-height:1.4}
+.irow textarea:focus{outline:none;border-color:var(--indigo)}
+.irow textarea::placeholder{color:var(--tx2)}
+.sbtn{align-self:flex-end;width:44px;height:44px;border-radius:50%;border:none;background:var(--indigo);color:#fff;font-size:18px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.sbtn:disabled{opacity:.35}
+.brow{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.bb{font-size:11px;padding:5px 11px;border-radius:12px;border:1px solid var(--bd);background:var(--sf);color:var(--tx2);cursor:pointer;font-family:inherit;font-weight:500}
+.bb:hover{border-color:var(--indigo);color:var(--indigo)}
+.ptab{padding:14px;overflow-y:auto;flex:1}
+.pc{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:13px 15px;margin-bottom:10px}
+.pc h3{margin:0 0 5px;font-size:13.5px;font-weight:700;color:var(--indigo)}
+.pc p{margin:0;font-size:12.5px;line-height:1.6;color:var(--tx);font-style:italic}
+.tg{display:inline-block;font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:7px;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px}
+.stab{padding:14px;overflow-y:auto;flex:1}
+.sr{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--sf);border:1px solid var(--bd);border-radius:10px;margin-bottom:8px}
+.sr .sn2{font-size:22px;font-weight:800;min-width:32px;text-align:center}
+.sr .si{flex:1;min-width:0}
+.sr .sp{font-size:12.5px;font-weight:600}.sr .sd{font-size:10.5px;color:var(--tx2)}.sr .sf{font-size:10.5px;color:var(--tx2);margin-top:2px}
+.ns{text-align:center;color:var(--tx2);font-size:13px;padding:40px 0}
+.thinking{align-self:flex-start;font-size:12px;color:var(--tx2);padding:6px 12px;font-style:italic}
+</style>
+</head>
+<body>
+<div class="tbar">
+<button class="tbtn on" data-t="practice" onclick="stab('practice')">Practice</button>
+<button class="tbtn" data-t="pitches" onclick="stab('pitches')">Pitches</button>
+<button class="tbtn" data-t="scores" onclick="stab('scores')">Scores</button>
+</div>
+
+<div class="tpane on" id="tp-practice">
+<div class="pbar" id="pbar"></div>
+<div class="pstrip" id="pstrip"></div>
+<div class="cha" id="cha"></div>
+<div class="ctl">
+<div class="irow">
+<textarea id="inp" placeholder="Type your pitch..." rows="1" oninput="ag(this)"></textarea>
+<button class="sbtn" id="sb" onclick="send()">&#x2191;</button>
+</div>
+<div class="brow">
+<button class="bb" onclick="nw()">New</button>
+<button class="bb" onclick="es()">End &amp; Score</button>
+</div>
+</div>
+</div>
+
+<div class="tpane" id="tp-pitches">
+<div class="ptab">
+<div class="pc"><div class="tg" style="background:#dbeafe;color:#1d4ed8">A — Science</div><h3>Lead with credibility</h3><p>"Hi, I've built an app called Parent Maxing — it's backed by over 130,000 research papers. The idea is helping parents get the absolute most out of their child's early years. You can send photos and videos for face scans and motor development tracking to catch problems early, and it builds weekly meal plans priced across 9 supermarkets. It's a 30-day free trial — can I leave some flyers for your parents?"</p></div>
+<div class="pc"><div class="tg" style="background:#fce7f3;color:#be185d">B — Problem</div><h3>Lead with what parents fear</h3><p>"Hi, I've built an app called Parent Maxing — parents send in photos and videos, and it picks up things like flat head, motor delays and nutritional gaps early, before they become real problems. It also builds weekly meal plans priced across 9 supermarkets. Everything's backed by over 130,000 research papers. It's a 30-day free trial — can I leave some flyers for your parents?"</p></div>
+<div class="pc"><div class="tg" style="background:#d1fae5;color:#047857">C — Practical</div><h3>Lead with daily life</h3><p>"Hi, I've built an app called Parent Maxing — it builds weekly meal plans for babies and toddlers priced across 9 UK supermarkets, so parents can see exactly what to feed their child and what it'll cost at Aldi versus Tesco. It also does face scans and motor development tracking from photos and videos, all backed by over 130,000 research papers. It's a 30-day free trial — can I leave some flyers for your parents?"</p></div>
+<div class="pc"><div class="tg" style="background:#fef3c7;color:#b45309">D — Aspirational</div><h3>Lead with the stat</h3><p>"Hi, I've built an app called Parent Maxing — the whole idea is that 82% of brain development happens before age 3, so those early years are everything. The app helps parents max that window: face scans, motor development tracking from videos, and weekly meal plans priced across 9 supermarkets, all backed by over 130,000 research papers. It's a 30-day free trial — can I leave some flyers for your parents?"</p></div>
+<div class="pc" style="border-color:var(--indigo);border-width:2px"><div class="tg" style="background:var(--indigo);color:#fff">Current — In Doc</div><h3>Distribution plan version</h3><p>"Hi, I've built an app called Parent Maxing — it scans your baby's head shape for flat spots, tracks their motor development through video, and builds weekly meal plans priced across 9 supermarkets, all backed by 130,000 research papers. The idea is helping parents get the absolute most out of their child's early years. It's a 30-day free trial — can I leave some flyers for your parents?"</p></div>
+<div class="pc"><div class="tg" style="background:var(--al);color:var(--am)">Boutique</div><h3>For shop owners</h3><p>"I run an app called Parent Maxing — it does head-shape scans, motor development tracking, and weekly meal plans priced across 9 supermarkets, all backed by 130,000 research papers. It helps parents get the most out of their child's first years. Free 30-day trial, no commitment — could I leave a few cards by your till?"</p></div>
+<div class="pc"><div class="tg" style="background:var(--rl);color:var(--rd)">Price Objection</div><h3>When they ask "how much?"</h3><p>"It's £9.99 a month or £79.99 for the year after the trial, but most parents see the value within the first week. You can cancel any time during the 30 days."</p></div>
+<div class="pc"><div class="tg" style="background:var(--gl);color:var(--gn)">Digital Share</div><h3>The highest-value ask</h3><p>"Or I can email you a digital version to share in your parent WhatsApp group or newsletter — one share there reaches every family."</p></div>
+</div>
+</div>
+
+<div class="tpane" id="tp-scores">
+<div class="stab" id="slist"></div>
+</div>
+
+<script>
+const P=[
+{id:'nm',l:'Nursery Manager',d:'medium',
+ds:'Sarah — professional, gets pitched weekly, protective of parents.',
+s:`You are Sarah, nursery manager, 60 families. Someone at reception wants to leave materials. Professional, warm but guarded. Pitched weekly. Concerns: selling to parents? GDPR for photos? Ask pointed questions. If they handle objections well warm up. Can say yes to: flyer stack, noticeboard, newsletter share. Won't endorse or let them approach parents. Golden yes: newsletter. 2-3 SHORT sentences. Never break character.`},
+{id:'sm',l:'Skeptical Mum',d:'medium',
+ds:'Claire — tired, phone full of unused apps, "how is this different?"',
+s:`You are Claire, 34, tired mum, two kids. Approached at pick-up. Phone has 4 unused baby apps. "I already have apps." "How much?" "Different from NHS app?" Free trial + cancel: guard lowers. Pushy: "I'll have a look thanks" (won't). Magic: "saves time", "what to buy", "catches things early". 1-2 SHORT sentences. Never break character.`},
+{id:'bo',l:'Boutique Owner',d:'medium',
+ds:'Priya — curates her shop, hates clutter, guards her brand.',
+s:`You are Priya, upmarket children's boutique owner. "We don't do that." Hate clutter. Ask to see the app. If clean design: warm up. Might offer cards by till. Won't: poster in window. 1-2 SHORT sentences. Never break character.`},
+{id:'dad',l:'Dad at Park',d:'easy',
+ds:'James — first-time dad, open, defers to partner. Easy.',
+s:`You are James, 29, first-time dad, paternity leave, 5-month-old. Park chat about an app. Friendly. Partner handles feeding. If cooking mentioned (you cook): engage. 130k papers impresses (you're in tech). Might download. "Send me the link?" 1-2 SHORT sentences. Never break character.`},
+{id:'cr',l:'Chain Receptionist',d:'hard',
+ds:'Dani — zero authority, everything goes through head office. Brick wall.',
+s:`You are Dani, chain nursery receptionist. Zero authority. Manager not here. "Sounds cool but I can't, need head office." If pushed: "I really can't." Best: give generic email. Might take flyer for yourself. 1-2 SHORT sentences. Never break character.`},
+{id:'hm',l:'Hostile Manager',d:'hard',
+ds:'Karen — bad day, hates salespeople, will shut you down in 10 seconds.',
+s:`You are Karen, nursery manager, terrible day. Hostile, curt, want them gone. "We don't accept external materials." "I'm busy." "We've had complaints about apps." Only soften if genuinely impressive AND helps Ofsted scores. Even then: "email me." If pushy AT ALL: "I need you to leave now." 1-2 sentences MAX. Curt. Never break character.`},
+{id:'rp',l:'Rushing Parent',d:'hard',
+ds:'Aisha — literally running to car, 15 seconds before she\'s gone.',
+s:`You are Aisha, 31, speed-walking to car with screaming toddler. NOT rude, just rushing. "Sorry can't stop!" "One sentence what is it?" If they can't hook in ONE sentence: "sorry got to go!" If hooked: "text me the link" or "website?" Won't stop walking. 1 sentence MAX. Never break character.`},
+{id:'comp',l:'"We Have One"',d:'hard',
+ds:'Lisa — nursery uses Famly, recommends Baby Buddy. Will compare you.',
+s:`You are Lisa, nursery deputy. Already use Famly, recommend Baby Buddy. "We already recommend Baby Buddy." "How's this different?" "Parents overwhelmed with apps." Not hostile but deeply skeptical. Compare everything. CAN be won if genuinely unique features (face scans, supermarket pricing). Make them work. 2-3 sentences. Never break character.`},
+{id:'ph',l:'Price Hammer',d:'hard',
+ds:'Marcus — interested but hammers price. "£10/month for an APP?"',
+s:`You are Marcus, 36, dad of two. Interested BUT hammer the price. "£10 a MONTH? For an app?" "NHS website is free." "More than Netflix." "Wife would kill me." "Make it free with ads?" NOT leaving — genuinely engaged — but hammer every angle. CAN be won by: supermarket savings > £10/month, face scan value, annual = £6.66/month. Make them earn it. 2-3 sentences. Never break character.`},
+{id:'gc',l:'Gatekeeper Carer',d:'hard',
+ds:'Margaret — childminder, old school, doesn\'t trust apps or technology.',
+s:`You are Margaret, 58, experienced childminder for 20 years. Someone wants to leave flyers. You don't trust apps. "I've raised hundreds of children without an app." "Parents today are too anxious already." "We don't need a screen telling us what to feed children." "I know more about child development than any app." You are kind but immovable. The ONLY thing that might crack you: if they mention it catches flat head early (you had a child in your care with undiagnosed plagiocephaly and feel guilty). Even then just "hmm, interesting." 1-2 sentences. Never break character.`},
+{id:'co',l:'Pitch Coach',d:'easy',
+ds:'Scores your pitch /10 with specific feedback.',
+s:`Pitch coach. Parent Maxing: face scans, motor dev tracking, meal plans across 9 supermarkets, 130k papers. 30-day free trial, £9.99/month or £79.99/year. Never "AI" or "Baby Maxing". Stats: 95% baby foods heavy metals, 40% UK under-5s iron deficient, 82% brain dev before 3, +6.7 IQ optimal nutrition. Score /10. 2-3 improvements. Direct. 3-4 sentences.`}
+];
+
+let cp=P[0],msgs=[],busy=false,sf=null,hist=[];
+
+async function init(){
+try{sf=await claude.use("sample")}catch(e){sf=null}
+try{hist=JSON.parse(localStorage.getItem('pms')||'[]')}catch(e){hist=[]}
+rb();sel(P[0]);rs();
+}
+
+function stab(id){
+document.querySelectorAll('.tpane').forEach(t=>t.classList.remove('on'));
+document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('on'));
+document.getElementById('tp-'+id).classList.add('on');
+document.querySelector('.tbtn[data-t="'+id+'"]').classList.add('on');
+}
+
+function rb(){
+const b=document.getElementById('pbar');b.innerHTML='';
+P.forEach(p=>{const e=document.createElement('button');e.className='pbtn'+(p.id===cp.id?' on':'');
+const dc=p.d==='easy'?'de':p.d==='medium'?'dm':'dh';
+e.innerHTML=p.l+' <span class="dd '+dc+'"></span>';e.onclick=()=>sel(p);b.appendChild(e)});
+}
+
+function sel(p){cp=p;document.getElementById('pstrip').innerHTML='<b>'+p.l+'</b> — '+p.ds;rb();nw();}
+
+function nw(){
+msgs=[];const c=document.getElementById('cha');c.innerHTML='';
+sm(cp.id==='co'?'Pitch Coach — type your pitch':'You\'ve walked up to '+cp.l+'. Go.');
+document.getElementById('inp').focus();
+}
+
+function sm(t){const c=document.getElementById('cha'),d=document.createElement('div');d.className='m s';d.textContent=t;c.appendChild(d);c.scrollTop=c.scrollHeight}
+
+function am(role,t){
+const c=document.getElementById('cha'),d=document.createElement('div');
+d.className='m '+(role==='u'?'u':'p');
+d.innerHTML='<div class="r">'+(role==='u'?'You':cp.l)+'</div>';
+const b=document.createElement('div');b.textContent=t;d.appendChild(b);
+c.appendChild(d);c.scrollTop=c.scrollHeight;return b;
+}
+
+function asc(score,html){
+const c=document.getElementById('cha'),d=document.createElement('div');
+d.className='sc '+(score>=7?'g':score>=5?'y':'b');
+d.innerHTML='<div class="sn">'+score+'/10</div><div>'+html+'</div>';
+c.appendChild(d);c.scrollTop=c.scrollHeight;
+}
+
+function ag(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,110)+'px'}
+
+function send(){
+const i=document.getElementById('inp'),t=i.value.trim();
+if(!t||busy)return;i.value='';i.style.height='auto';pi(t);
+}
+
+async function pi(text){
+if(busy||!text)return;
+am('u',text);msgs.push({r:'u',c:text});
+if(!sf){sm('Cannot connect to generate responses');return}
+busy=true;document.getElementById('sb').disabled=true;
+const c=document.getElementById('cha');
+const th=document.createElement('div');th.className='thinking';th.textContent=cp.l+' typing...';c.appendChild(th);c.scrollTop=c.scrollHeight;
+try{
+const turns=msgs.map(m=>(m.r==='u'?'PITCHER: ':cp.l.toUpperCase()+': ')+m.c).join('\n');
+const be=document.createElement('div');let md=null;
+const res=await sf([{role:'user',content:cp.s+'\n\nConversation:\n'+turns}],
+{onText:({text})=>{
+th.remove();
+if(!md){md=document.createElement('div');md.className='m p';md.innerHTML='<div class="r">'+cp.l+'</div>';md.appendChild(be);c.appendChild(md)}
+be.textContent=text;c.scrollTop=c.scrollHeight;
+}});
+msgs.push({r:'a',c:res.text});
+}catch(e){th.remove();sm('Error: '+(e.message||'failed'))}
+busy=false;document.getElementById('sb').disabled=false;
+document.getElementById('inp').focus();
+}
+
+async function es(){
+if(busy||msgs.length<2||!sf)return;
+busy=true;sm('Scoring...');
+try{
+const cv=msgs.map(m=>(m.r==='u'?'PITCHER: ':cp.l.toUpperCase()+': ')+m.c).join('\n');
+const res=await sf(
+`Score this pitch practice. Pitcher selling "Parent Maxing" — face scans (flat head), motor dev tracking from video, meal plans priced across 9 UK supermarkets, 130k+ papers. 30-day free trial, £9.99/month or £79.99/year. Never say "AI" or "Baby Maxing".
+
+Persona: ${cp.l} (${cp.ds})
+
+CONVERSATION:
+${cv}
+
+Respond ONLY with valid JSON, no markdown no backticks:
+{"score":<1-10>,"verdict":"<one word>","feedback":"<2-3 sentences>","outcome":"<what happens in real life>"}`
+);
+const d=JSON.parse(res.text.replace(/```json|```/g,'').trim());
+asc(d.score,'<strong>'+d.verdict+'</strong> — '+d.feedback+'<br><br><strong>Real-world:</strong> '+d.outcome);
+const entry={score:d.score,verdict:d.verdict,persona:cp.l,feedback:d.feedback,outcome:d.outcome,date:new Date().toISOString(),turns:msgs.length};
+hist.unshift(entry);
+try{localStorage.setItem('pms',JSON.stringify(hist.slice(0,50)))}catch(e){}
+rs();
+}catch(e){sm('Score failed: '+(e.message||'error'))}
+busy=false;
+}
+
+function rs(){
+const el=document.getElementById('slist');
+if(!hist.length){el.innerHTML='<div class="ns">No scores yet. Practise and hit "End & Score".</div>';return}
+el.innerHTML='';
+hist.forEach(s=>{
+const col=s.score>=7?'var(--gn)':s.score>=5?'var(--am)':'var(--rd)';
+const dt=new Date(s.date);
+const ds=dt.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' '+dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+const r=document.createElement('div');r.className='sr';
+r.innerHTML=`<div class="sn2" style="color:${col}">${s.score}</div><div class="si"><div class="sp">${s.persona} <span style="color:${col};font-size:11px">${s.verdict}</span></div><div class="sd">${ds} · ${s.turns} turns</div><div class="sf">${s.feedback}</div></div>`;
+el.appendChild(r);
+});
+}
+
+document.getElementById('inp').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}});
+init();
+</script>
+</body>
+</html>
